@@ -1,0 +1,32 @@
+{
+  "name": "gravity-sim",
+  "version": "1.0.0-alpha.1",
+  "private": true,
+  "description": "A gravity simulator",
+  "author": {
+    "name": "Christopher Quadflieg",
+    "email": "chrissi92@hotmail.de"
+  },
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "start": "http-server dist -p 8000"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "three": "~0.119.1",
+    "vue": "^2.6.11"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-typescript": "~4.4.0",
+    "@vue/cli-service": "~4.4.0",
+    "http-server": "~0.12.3",
+    "sass": "^1.26.5",
+    "sass-loader": "^8.0.2",
+    "typescript": "~3.9.7",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "_id": "gravity-sim@1.0.0-alpha.1",
+  "license": "MIT",
+  "readme": "ERROR: No README data found!"
+}

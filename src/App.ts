@@ -1,7 +1,9 @@
 import {
+  AmbientLight,
   Mesh,
-  MeshBasicMaterial,
+  MeshPhongMaterial,
   PerspectiveCamera,
+  PointLight,
   Scene,
   SphereGeometry,
   Vector3,
@@ -12,7 +14,7 @@ import Vue from "vue";
 // Init
 const scene = new Scene();
 const camera = new PerspectiveCamera(
-  75,
+  90,
   window.innerWidth / window.innerHeight,
   0.1,
   1000
@@ -24,22 +26,31 @@ document.body.appendChild(renderer.domElement);
 
 // Init Objects
 const geometry1 = new SphereGeometry(0.5);
-const material1 = new MeshBasicMaterial({ color: 0xff0000 });
+const material1 = new MeshPhongMaterial({ color: 0xff0000 });
 const sphere1 = new Mesh(geometry1, material1);
 const mass1 = 1e1;
-const velocity1 = new Vector3(0, 0, -0.05);
-sphere1.position.x = -5;
+const velocity1 = new Vector3(0, 0, 0.05);
+sphere1.position.x = -10;
 scene.add(sphere1);
 
-const geometry2 = new SphereGeometry(0.5);
-const material2 = new MeshBasicMaterial({ color: 0x0000ff });
+const geometry2 = new SphereGeometry(1);
+const material2 = new MeshPhongMaterial({ color: 0x0000ff });
 const sphere2 = new Mesh(geometry2, material2);
-const mass2 = 1e8;
-const velocity2 = new Vector3(0, 0, 0.05);
-sphere2.position.x = 5;
+const mass2 = 120_000_000;
+const velocity2 = new Vector3(0, 0, -0.05);
+sphere2.position.x = 8;
 scene.add(sphere2);
 
+const pointLight = new PointLight(0xffffff, 1, 1000);
+pointLight.position.set(0, 0, 0);
+pointLight.castShadow = true;
+scene.add(pointLight);
+
+const ambientLight = new AmbientLight(0x404040, 1);
+scene.add(ambientLight);
+
 camera.position.y = 20;
+camera.position.z = 20;
 camera.lookAt(0, 0, 0);
 
 /**

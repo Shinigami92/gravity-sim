@@ -23,23 +23,24 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 // Init Objects
-const celestialBody1 = new CelestialBody({
-  radius: 0.5,
-  color: 0xff0000,
-  mass: 100,
-  position: new Vector3(-10, 0, 0),
-  velocity: new Vector3(0, 0, 0.05),
-});
-scene.add(celestialBody1);
+const celestialBodies: CelestialBody[] = [
+  new CelestialBody({
+    radius: 0.5,
+    color: 0xff0000,
+    mass: 100,
+    position: new Vector3(-10, 0, 0),
+    velocity: new Vector3(0, 0, 0.05),
+  }),
+  new CelestialBody({
+    radius: 1,
+    color: 0x0000ff,
+    mass: 1_200_000_000,
+    position: new Vector3(8, 0, 0),
+    velocity: new Vector3(0, 0, -0.05),
+  }),
+];
 
-const celestialBody2 = new CelestialBody({
-  radius: 1,
-  color: 0x0000ff,
-  mass: 1_200_000_000,
-  position: new Vector3(8, 0, 0),
-  velocity: new Vector3(0, 0, -0.05),
-});
-scene.add(celestialBody2);
+scene.add(...celestialBodies);
 
 const pointLight = new PointLight(0xffffff, 1, 1000);
 pointLight.position.set(0, 0, 0);
@@ -75,35 +76,35 @@ function animate(now: number) {
 
   // Calculate
   const f1 = gravitationalForce(
-    celestialBody1.mass,
-    celestialBody2.mass,
-    celestialBody1.position.distanceTo(celestialBody2.position)
+    celestialBodies[0].mass,
+    celestialBodies[1].mass,
+    celestialBodies[0].position.distanceTo(celestialBodies[1].position)
   );
 
   const f2 = gravitationalForce(
-    celestialBody2.mass,
-    celestialBody1.mass,
-    celestialBody2.position.distanceTo(celestialBody1.position)
+    celestialBodies[1].mass,
+    celestialBodies[0].mass,
+    celestialBodies[1].position.distanceTo(celestialBodies[0].position)
   );
 
-  celestialBody1.velocity.add(
-    celestialBody2.position
+  celestialBodies[0].velocity.add(
+    celestialBodies[1].position
       .clone()
-      .sub(celestialBody1.position)
+      .sub(celestialBodies[0].position)
       .normalize()
       .multiplyScalar(delta * f1)
   );
-  celestialBody2.velocity.add(
-    celestialBody1.position
+  celestialBodies[1].velocity.add(
+    celestialBodies[0].position
       .clone()
-      .sub(celestialBody2.position)
+      .sub(celestialBodies[1].position)
       .normalize()
       .multiplyScalar(delta * f2)
   );
 
   // Apply
-  celestialBody1.position.add(celestialBody1.velocity);
-  celestialBody2.position.add(celestialBody2.velocity);
+  celestialBodies[0].position.add(celestialBodies[0].velocity);
+  celestialBodies[1].position.add(celestialBodies[1].velocity);
 
   renderer.render(scene, camera);
 

@@ -8,6 +8,7 @@ import {
   SphereGeometry,
   Vector3,
 } from "three";
+import { gravitationalForce } from "./Common";
 
 export interface CelestialBodyOptions {
   radius: number;
@@ -41,5 +42,31 @@ export class CelestialBody extends Object3D {
 
     this.velocity = options.velocity;
     this.mass = options.mass;
+  }
+
+  public calculateVelocity(celestialBodies: CelestialBody[], delta: number) {
+    for (const celestialBody of celestialBodies) {
+      if (celestialBody.id === this.id) {
+        continue;
+      }
+
+      const force = gravitationalForce(
+        this.mass,
+        celestialBody.mass,
+        this.position.distanceTo(celestialBody.position)
+      );
+
+      this.velocity.add(
+        celestialBody.position
+          .clone()
+          .sub(this.position)
+          .normalize()
+          .multiplyScalar(delta * force)
+      );
+    }
+  }
+
+  public applyCalculatedVelocity() {
+    this.position.add(this.velocity);
   }
 }

@@ -54,17 +54,6 @@ camera.position.y = 20;
 camera.position.z = 20;
 camera.lookAt(0, 0, 0);
 
-/**
- * Gravitational constant
- *
- * m³ kg⁻¹ s⁻²
- */
-const G = 6.67408 * Math.pow(10, -11);
-
-function gravitationalForce(m1: number, m2: number, r: number) {
-  return G * ((m1 * m2) / Math.pow(r, 2));
-}
-
 // Animate
 let then = 0;
 
@@ -74,37 +63,15 @@ function animate(now: number) {
   const delta = now - then;
   then = now;
 
-  // Calculate
-  const f1 = gravitationalForce(
-    celestialBodies[0].mass,
-    celestialBodies[1].mass,
-    celestialBodies[0].position.distanceTo(celestialBodies[1].position)
-  );
+  // Calculate gravitational force
+  for (const celestialBody of celestialBodies) {
+    celestialBody.calculateVelocity(celestialBodies, delta);
+  }
 
-  const f2 = gravitationalForce(
-    celestialBodies[1].mass,
-    celestialBodies[0].mass,
-    celestialBodies[1].position.distanceTo(celestialBodies[0].position)
-  );
-
-  celestialBodies[0].velocity.add(
-    celestialBodies[1].position
-      .clone()
-      .sub(celestialBodies[0].position)
-      .normalize()
-      .multiplyScalar(delta * f1)
-  );
-  celestialBodies[1].velocity.add(
-    celestialBodies[0].position
-      .clone()
-      .sub(celestialBodies[1].position)
-      .normalize()
-      .multiplyScalar(delta * f2)
-  );
-
-  // Apply
-  celestialBodies[0].position.add(celestialBodies[0].velocity);
-  celestialBodies[1].position.add(celestialBodies[1].velocity);
+  // Apply calculated gravitational force
+  for (const celestialBody of celestialBodies) {
+    celestialBody.applyCalculatedVelocity();
+  }
 
   renderer.render(scene, camera);
 

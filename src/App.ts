@@ -27,16 +27,23 @@ const celestialBodies: CelestialBody[] = [
   new CelestialBody({
     radius: 0.5,
     color: 0xff0000,
-    mass: 100,
+    mass: 1_000,
     position: new Vector3(-10, 0, 0),
     velocity: new Vector3(0, 0, 0.05),
   }),
   new CelestialBody({
     radius: 1,
     color: 0x0000ff,
-    mass: 1_200_000_000,
+    mass: 120_000_000,
     position: new Vector3(8, 0, 0),
-    velocity: new Vector3(0, 0, -0.05),
+    velocity: new Vector3(0.05, 0, -0.05),
+  }),
+  new CelestialBody({
+    radius: 0.7,
+    color: 0x00ff00,
+    mass: 900,
+    position: new Vector3(0, 0, -9),
+    velocity: new Vector3(-0.1, 0.01, -0.05),
   }),
 ];
 

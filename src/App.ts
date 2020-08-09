@@ -1,12 +1,15 @@
 import { CelestialBody } from "@/shared/CelestialBody";
 import {
   AmbientLight,
+  AxesHelper,
+  Object3D,
   PerspectiveCamera,
   PointLight,
   Scene,
   Vector3,
   WebGLRenderer,
 } from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Vue from "vue";
 
 // Init
@@ -57,9 +60,43 @@ scene.add(pointLight);
 const ambientLight = new AmbientLight(0x404040, 1);
 scene.add(ambientLight);
 
-camera.position.y = 20;
-camera.position.z = 20;
-camera.lookAt(0, 0, 0);
+const axesHelper = new AxesHelper(5);
+scene.add(axesHelper);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableKeys = false;
+controls.screenSpacePanning = false;
+
+let updateTarget: Object3D | null = axesHelper;
+controls.target = updateTarget.position;
+camera.position.set(0, 5, 20);
+camera.up.set(0, 1, 0);
+updateTarget.add(camera);
+updateTarget = null;
+controls.update();
+
+document.addEventListener(
+  "keyup",
+  (event) => {
+    console.debug("keyup:", event.key);
+
+    switch (event.key) {
+      case "1":
+        updateTarget = axesHelper;
+        break;
+      case "2":
+        updateTarget = celestialBodies[0];
+        break;
+      case "3":
+        updateTarget = celestialBodies[1];
+        break;
+      case "4":
+        updateTarget = celestialBodies[2];
+        break;
+    }
+  },
+  false
+);
 
 // Animate
 let then = 0;
@@ -79,6 +116,15 @@ function animate(now: number) {
   for (const celestialBody of celestialBodies) {
     celestialBody.applyCalculatedVelocity();
   }
+
+  if (updateTarget) {
+    controls.target = updateTarget.position;
+    camera.position.set(0, 5, 20);
+    updateTarget.add(camera);
+    updateTarget = null;
+  }
+
+  controls.update();
 
   renderer.render(scene, camera);
 

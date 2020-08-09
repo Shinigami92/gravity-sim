@@ -26,7 +26,7 @@ document.body.appendChild(renderer.domElement);
 const celestialBody1 = new CelestialBody({
   radius: 0.5,
   color: 0xff0000,
-  mass: 1e1,
+  mass: 100,
   position: new Vector3(-10, 0, 0),
   velocity: new Vector3(0, 0, 0.05),
 });
@@ -35,7 +35,7 @@ scene.add(celestialBody1);
 const celestialBody2 = new CelestialBody({
   radius: 1,
   color: 0x0000ff,
-  mass: 120_000_000,
+  mass: 1_200_000_000,
   position: new Vector3(8, 0, 0),
   velocity: new Vector3(0, 0, -0.05),
 });
@@ -65,8 +65,13 @@ function gravitationalForce(m1: number, m2: number, r: number) {
 }
 
 // Animate
-function animate() {
-  requestAnimationFrame(animate);
+let then = 0;
+
+function animate(now: number) {
+  now *= 0.001; // make it seconds
+
+  const delta = now - then;
+  then = now;
 
   // Calculate
   const f1 = gravitationalForce(
@@ -86,14 +91,14 @@ function animate() {
       .clone()
       .sub(celestialBody1.position)
       .normalize()
-      .multiplyScalar(f1)
+      .multiplyScalar(delta * f1)
   );
   celestialBody2.velocity.add(
     celestialBody1.position
       .clone()
       .sub(celestialBody2.position)
       .normalize()
-      .multiplyScalar(f2)
+      .multiplyScalar(delta * f2)
   );
 
   // Apply
@@ -101,11 +106,13 @@ function animate() {
   celestialBody2.position.add(celestialBody2.velocity);
 
   renderer.render(scene, camera);
+
+  requestAnimationFrame(animate);
 }
 
 export default Vue.extend({
   name: "App",
   beforeMount() {
-    animate();
+    requestAnimationFrame(animate);
   },
 });

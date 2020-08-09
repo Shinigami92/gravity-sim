@@ -1,11 +1,9 @@
+import { CelestialBody } from "@/shared/CelestialBody";
 import {
   AmbientLight,
-  Mesh,
-  MeshPhongMaterial,
   PerspectiveCamera,
   PointLight,
   Scene,
-  SphereGeometry,
   Vector3,
   WebGLRenderer,
 } from "three";
@@ -25,21 +23,23 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 // Init Objects
-const geometry1 = new SphereGeometry(0.5);
-const material1 = new MeshPhongMaterial({ color: 0xff0000 });
-const sphere1 = new Mesh(geometry1, material1);
-const mass1 = 1e1;
-const velocity1 = new Vector3(0, 0, 0.05);
-sphere1.position.x = -10;
-scene.add(sphere1);
+const celestialBody1 = new CelestialBody({
+  radius: 0.5,
+  color: 0xff0000,
+  mass: 1e1,
+  position: new Vector3(-10, 0, 0),
+  velocity: new Vector3(0, 0, 0.05),
+});
+scene.add(celestialBody1);
 
-const geometry2 = new SphereGeometry(1);
-const material2 = new MeshPhongMaterial({ color: 0x0000ff });
-const sphere2 = new Mesh(geometry2, material2);
-const mass2 = 120_000_000;
-const velocity2 = new Vector3(0, 0, -0.05);
-sphere2.position.x = 8;
-scene.add(sphere2);
+const celestialBody2 = new CelestialBody({
+  radius: 1,
+  color: 0x0000ff,
+  mass: 120_000_000,
+  position: new Vector3(8, 0, 0),
+  velocity: new Vector3(0, 0, -0.05),
+});
+scene.add(celestialBody2);
 
 const pointLight = new PointLight(0xffffff, 1, 1000);
 pointLight.position.set(0, 0, 0);
@@ -70,35 +70,35 @@ function animate() {
 
   // Calculate
   const f1 = gravitationalForce(
-    mass1,
-    mass2,
-    sphere1.position.distanceTo(sphere2.position)
+    celestialBody1.mass,
+    celestialBody2.mass,
+    celestialBody1.position.distanceTo(celestialBody2.position)
   );
 
   const f2 = gravitationalForce(
-    mass2,
-    mass1,
-    sphere2.position.distanceTo(sphere1.position)
+    celestialBody2.mass,
+    celestialBody1.mass,
+    celestialBody2.position.distanceTo(celestialBody1.position)
   );
 
-  velocity1.add(
-    sphere2.position
+  celestialBody1.velocity.add(
+    celestialBody2.position
       .clone()
-      .sub(sphere1.position)
+      .sub(celestialBody1.position)
       .normalize()
       .multiplyScalar(f1)
   );
-  velocity2.add(
-    sphere1.position
+  celestialBody2.velocity.add(
+    celestialBody1.position
       .clone()
-      .sub(sphere2.position)
+      .sub(celestialBody2.position)
       .normalize()
       .multiplyScalar(f2)
   );
 
   // Apply
-  sphere1.position.add(velocity1);
-  sphere2.position.add(velocity2);
+  celestialBody1.position.add(celestialBody1.velocity);
+  celestialBody2.position.add(celestialBody2.velocity);
 
   renderer.render(scene, camera);
 }

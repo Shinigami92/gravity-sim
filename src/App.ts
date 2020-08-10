@@ -1,12 +1,10 @@
-import { CelestialBody } from "@/shared/CelestialBody";
+import { celestialBodies } from "@/shared/systems/SolarSystem";
 import {
   AmbientLight,
   AxesHelper,
   Object3D,
   PerspectiveCamera,
-  PointLight,
   Scene,
-  Vector3,
   WebGLRenderer,
 } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -17,50 +15,20 @@ const scene = new Scene();
 const camera = new PerspectiveCamera(
   90,
   window.innerWidth / window.innerHeight,
-  0.1,
-  1000
+  10,
+  1_000_000
 );
 
 const renderer = new WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Init Objects
-const celestialBodies: CelestialBody[] = [
-  new CelestialBody({
-    radius: 0.5,
-    color: 0xff0000,
-    mass: 1_000,
-    position: new Vector3(-10, 0, 0),
-    velocity: new Vector3(0, 0, 0.05),
-  }),
-  new CelestialBody({
-    radius: 1,
-    color: 0x0000ff,
-    mass: 120_000_000,
-    position: new Vector3(8, 0, 0),
-    velocity: new Vector3(0.05, 0, -0.05),
-  }),
-  new CelestialBody({
-    radius: 0.7,
-    color: 0x00ff00,
-    mass: 900,
-    position: new Vector3(0, 0, -9),
-    velocity: new Vector3(-0.1, 0.01, -0.05),
-  }),
-];
-
 scene.add(...celestialBodies);
-
-const pointLight = new PointLight(0xffffff, 1, 1000);
-pointLight.position.set(0, 0, 0);
-pointLight.castShadow = true;
-scene.add(pointLight);
 
 const ambientLight = new AmbientLight(0x404040, 1);
 scene.add(ambientLight);
 
-const axesHelper = new AxesHelper(5);
+const axesHelper = new AxesHelper(2000);
 scene.add(axesHelper);
 
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -69,7 +37,7 @@ controls.screenSpacePanning = false;
 
 let updateTarget: Object3D | null = axesHelper;
 controls.target = updateTarget.position;
-camera.position.set(0, 5, 20);
+camera.position.set(0, 149_598_023e-4 / 3, 149_598_023e-4 * 0.7);
 camera.up.set(0, 1, 0);
 updateTarget.add(camera);
 updateTarget = null;
@@ -85,13 +53,17 @@ document.addEventListener(
         updateTarget = axesHelper;
         break;
       case "2":
-        updateTarget = celestialBodies[0];
-        break;
       case "3":
-        updateTarget = celestialBodies[1];
-        break;
       case "4":
-        updateTarget = celestialBodies[2];
+      case "5":
+      case "6":
+      case "7":
+      case "8":
+      case "9":
+        const index = +event.key - 2;
+        if (celestialBodies[index]) {
+          updateTarget = celestialBodies[index];
+        }
         break;
     }
   },
@@ -119,7 +91,7 @@ function animate(now: number) {
 
   if (updateTarget) {
     controls.target = updateTarget.position;
-    camera.position.set(0, 5, 20);
+    // camera.position.set(0, 5, 20);
     updateTarget.add(camera);
     updateTarget = null;
   }
